@@ -50,7 +50,6 @@ const mostLikes = (blogs) => {
     }
 
   });
-  console.log("map" + map);
 
   if (maxLikeCount > 0) {
     const res = map.get(maxBlogsAuthor);
@@ -89,7 +88,6 @@ const mostBlogs = (blogs) => {
 
 
   });
-  console.log("map" + map);
 
   if (maxBlogsCount > 0) {
     const res = map.get(maxBlogsAuthor);
