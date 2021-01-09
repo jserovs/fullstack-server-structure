@@ -9,7 +9,7 @@ const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 
 
-logger.info('connecting to', config.MONGODB_URI)
+// logger.info('connecting to', config.MONGODB_URI)
 
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
     .then(() => {
