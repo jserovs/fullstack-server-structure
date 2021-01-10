@@ -13,6 +13,7 @@ const unknownEndpoint = (request, response) => {
 }
 
 const errorHandler = (error, request, response, next) => {
+  logger.error('!!!ERROR!!!', error.name, error.message)
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
@@ -20,7 +21,6 @@ const errorHandler = (error, request, response, next) => {
   } else if (error.name === 'MongoError') {
     if (error.message.includes('E11000')) return response.status(400).json({ error: 'dublicate entry' })
   } else {
-    logger.error(error.name, error.message)
     return response.status(500).json({ error: error.message })
   }
 
