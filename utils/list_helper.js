@@ -1,19 +1,18 @@
 const dummy = (blogs) => {
   // ...
-  return 1;
+  return 1
 }
 
 const totalLikes = (blogs) => {
-  return blogs.reduce((accum, current) => accum + current.likes, 0);
+  return blogs.reduce((accum, current) => accum + current.likes, 0)
 }
 
 const favoriteBlog = (blogs) => {
-
   const maxLikes = Math.max.apply(Math, blogs.map((element) => {
-    return element.likes;
-  }));
+    return element.likes
+  }))
 
-  const favoriteBlog = blogs.filter(blog => blog.likes === maxLikes);
+  const favoriteBlog = blogs.filter(blog => blog.likes === maxLikes)
 
   if (favoriteBlog.length > 0) {
     return {
@@ -21,38 +20,33 @@ const favoriteBlog = (blogs) => {
       title: favoriteBlog[0].title,
       likes: favoriteBlog[0].likes
     }
-
   } else {
     return {}
   }
-
 }
 
 const mostLikes = (blogs) => {
-
-  const map = new Map();
-  var maxLikeCount = 0;
-  var maxBlogsAuthor;
+  const map = new Map()
+  let maxLikeCount = 0
+  let maxBlogsAuthor
   blogs.forEach((element) => {
-    const key = element.author;
+    const key = element.author
     // element by key from newly created map
-    
-    const mapEntry = map.get(key);
 
-    var blogCount = mapEntry ? mapEntry.blogCount + 1 : 1;
-    var likeCount = mapEntry ? mapEntry.likes + element.likes : element.likes;
+    const mapEntry = map.get(key)
 
-    map.set(key, { blogCount: blogCount, likes: likeCount });
+    const blogCount = mapEntry ? mapEntry.blogCount + 1 : 1
+    const likeCount = mapEntry ? mapEntry.likes + element.likes : element.likes
+
+    map.set(key, { blogCount: blogCount, likes: likeCount })
 
     if (likeCount > maxLikeCount) {
-      maxLikeCount = likeCount;
-      maxBlogsAuthor = key;
+      maxLikeCount = likeCount
+      maxBlogsAuthor = key
     }
-
-  });
+  })
 
   if (maxLikeCount > 0) {
-    const res = map.get(maxBlogsAuthor);
     return {
       author: maxBlogsAuthor,
       likes: maxLikeCount
@@ -60,37 +54,30 @@ const mostLikes = (blogs) => {
   } else {
     return {}
   }
-
-
 }
 
 const mostBlogs = (blogs) => {
-
-  const map = new Map();
-  var maxBlogsCount = 0;
-  var maxBlogsAuthor;
+  const map = new Map()
+  let maxBlogsCount = 0
+  let maxBlogsAuthor
   blogs.forEach((element) => {
-    const key = element.author;
+    const key = element.author
     // element by key from newly created map
-    
-    const mapEntry = map.get(key);
 
-    var blogCount = mapEntry ? mapEntry.blogCount + 1 : 1;
-    var likeCount = mapEntry ? mapEntry.likes + element.likes : element.likes;
+    const mapEntry = map.get(key)
 
-    map.set(key, { blogCount: blogCount, likes: likeCount });
+    const blogCount = mapEntry ? mapEntry.blogCount + 1 : 1
+    const likeCount = mapEntry ? mapEntry.likes + element.likes : element.likes
+
+    map.set(key, { blogCount: blogCount, likes: likeCount })
 
     if (blogCount > maxBlogsCount) {
-      maxBlogsCount = blogCount;
-      maxBlogsAuthor = key;
+      maxBlogsCount = blogCount
+      maxBlogsAuthor = key
     }
-
-
-
-  });
+  })
 
   if (maxBlogsCount > 0) {
-    const res = map.get(maxBlogsAuthor);
     return {
       author: maxBlogsAuthor,
       blogs: maxBlogsCount
@@ -98,12 +85,8 @@ const mostBlogs = (blogs) => {
   } else {
     return {}
   }
-
-
 }
 
 module.exports = {
   dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
 }
-
-
