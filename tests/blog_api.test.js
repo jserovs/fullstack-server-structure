@@ -1,151 +1,167 @@
 const mongoose = require('mongoose')
+const Blog = require('../models/blog')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 
-test('ids are unique', async () => {
-  const res = await api.get('/api/blogs')
+describe('Blog test set', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({})
 
-  if (res.length > 0) {
-    res[0].id.toBeDefined()
-  }
-})
+    const newBlogPost = new Blog({
+      title: 'initial Blog title',
+      author: 'initial Blog author',
+      url: 'initial Blog url',
+      likes: 0
+    })
 
-test('add', async () => {
-  const newBlogPost = {
-    title: 'Blog title',
-    author: 'Blog author',
-    url: 'Blog url',
-    likes: 999
-  }
+    await newBlogPost.save()
+  })
 
-  const res = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+  test('ids are unique', async () => {
+    const res = await api.get('/api/blogs')
 
-  const blogLengthBefore = isNaN(res.body.length) ? 0 : res.body.length
+    if (res.length > 0) {
+      res[0].id.toBeDefined()
+    }
+  })
 
-  await api.post('/api/blogs')
-    .set('Content-type', 'application/json')
-    .send(newBlogPost).expect(201)
+  test('add', async () => {
+    const newBlogPost = {
+      title: 'Blog title',
+      author: 'Blog author',
+      url: 'Blog url',
+      likes: 999
+    }
 
-  const res2 = await api.get('/api/blogs')
-    .expect(200)
+    const res = await api.get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  expect(res2.body.length).toBe(blogLengthBefore + 1)
-})
+    const blogLengthBefore = isNaN(res.body.length) ? 0 : res.body.length
 
-test('like property empty, set to 0', async () => {
-  const newBlogPost = {
-    title: 'test like property missing',
-    author: 'Blog author',
-    url: 'Blog url'
-  }
+    await api.post('/api/blogs')
+      .set('Content-type', 'application/json')
+      .send(newBlogPost).expect(201)
 
-  const res = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    const res2 = await api.get('/api/blogs')
+      .expect(200)
 
-  const blogLengthBefore = isNaN(res.body.length) ? 0 : res.body.length
+    expect(res2.body.length).toBe(blogLengthBefore + 1)
+  })
 
-  await api.post('/api/blogs')
-    .set('Content-type', 'application/json')
-    .send(newBlogPost).expect(201)
+  test('like property empty, set to 0', async () => {
+    const newBlogPost = {
+      title: 'test like property missing',
+      author: 'Blog author',
+      url: 'Blog url'
+    }
 
-  const res2 = await api.get('/api/blogs')
-    .expect(200)
+    const res = await api.get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  expect(res2.body.length).toBe(blogLengthBefore + 1)
+    const blogLengthBefore = isNaN(res.body.length) ? 0 : res.body.length
 
-  expect(res2.body[blogLengthBefore].likes).toBe(0)
-})
+    await api.post('/api/blogs')
+      .set('Content-type', 'application/json')
+      .send(newBlogPost).expect(201)
 
-test('bad request', async () => {
-  const newBlogPost = {
-    author: 'Blog author',
-    likes: 9
-  }
+    const res2 = await api.get('/api/blogs')
+      .expect(200)
 
-  const response = await api.post('/api/blogs')
-    .set('Content-type', 'application/json')
-    .send(newBlogPost)
+    expect(res2.body.length).toBe(blogLengthBefore + 1)
 
-  expect(response.statusCode).toBe(400)
-})
+    expect(res2.body[blogLengthBefore].likes).toBe(0)
+  })
 
-test('update', async () => {
-  const newBlogPost = {
-    title: 'for update',
-    author: 'Blog author',
-    url: 'Blog url'
-  }
+  test('bad request', async () => {
+    const newBlogPost = {
+      author: 'Blog author',
+      likes: 9
+    }
 
-  await api.post('/api/blogs')
-    .set('Content-type', 'application/json')
-    .send(newBlogPost).expect(201)
+    const response = await api.post('/api/blogs')
+      .set('Content-type', 'application/json')
+      .send(newBlogPost)
 
-  const res = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    expect(response.statusCode).toBe(400)
+  })
 
-  const blogToUpdate = res.body.find(blog => blog.title === 'for update')
+  test('update', async () => {
+    const newBlogPost = {
+      title: 'for update',
+      author: 'Blog author',
+      url: 'Blog url'
+    }
 
-  const id = blogToUpdate.id
+    await api.post('/api/blogs')
+      .set('Content-type', 'application/json')
+      .send(newBlogPost).expect(201)
 
-  const likesUpdate = {
-    likes: 100
-  }
+    const res = await api.get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  const response = await api.put('/api/blogs/' + id)
-    .set('Content-type', 'application/json')
-    .send(likesUpdate)
+    const blogToUpdate = res.body.find(blog => blog.title === 'for update')
 
-  expect(response.statusCode).toBe(204)
+    const id = blogToUpdate.id
 
-  const updateResult = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    const likesUpdate = {
+      likes: 100
+    }
 
-  // const afterUpdate = ;
+    const response = await api.put('/api/blogs/' + id)
+      .set('Content-type', 'application/json')
+      .send(likesUpdate)
 
-  expect(updateResult.body.find(blog => blog.title === 'for update').likes).toBe(100)
-})
+    expect(response.statusCode).toBe(204)
 
-test('delete', async () => {
-  const newBlogPost = {
-    title: 'for delete',
-    author: 'Blog author',
-    url: 'Blog url'
-  }
+    const updateResult = await api.get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  await api.post('/api/blogs')
-    .set('Content-type', 'application/json')
-    .send(newBlogPost).expect(201)
+    // const afterUpdate = ;
 
-  const res = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    expect(updateResult.body.find(blog => blog.title === 'for update').likes).toBe(100)
+  })
 
-  const blogToDelete = res.body.find(blog => blog.title === 'for delete')
+  test('delete', async () => {
+    const newBlogPost = {
+      title: 'for delete',
+      author: 'Blog author',
+      url: 'Blog url'
+    }
 
-  const id = blogToDelete.id
+    await api.post('/api/blogs')
+      .set('Content-type', 'application/json')
+      .send(newBlogPost).expect(201)
 
-  await api.delete('/api/blogs/' + id)
-    .set('Content-type', 'application/json')
-    .send(newBlogPost).expect(204)
+    const res = await api.get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  const deleteResult = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    const blogToDelete = res.body.find(blog => blog.title === 'for delete')
 
-  expect(deleteResult.body.find(blog => blog.title === 'for delete')).toBeUndefined()
-})
+    const id = blogToDelete.id
 
-test('blogs are json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    await api.delete('/api/blogs/' + id)
+      .set('Content-type', 'application/json')
+      .send(newBlogPost).expect(204)
+
+    const deleteResult = await api.get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(deleteResult.body.find(blog => blog.title === 'for delete')).toBeUndefined()
+  })
+
+  test('blogs are json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
 })
 
 afterAll(() => {
