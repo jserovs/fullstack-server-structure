@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose')
 const User = require('../models/user')
 const supertest = require('supertest')
@@ -7,6 +8,7 @@ const app = require('../app')
 const api = supertest(app)
 
 describe('user test set', () => {
+
   beforeEach(async () => {
     await User.deleteMany({})
 
@@ -15,6 +17,7 @@ describe('user test set', () => {
 
     await user.save()
   })
+
 
   test('create username', async () => {
     const usersAtStart = await helper.usersInDb()
@@ -95,3 +98,4 @@ describe('user test set', () => {
 afterAll(() => {
   mongoose.connection.close()
 })
+
