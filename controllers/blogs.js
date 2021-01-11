@@ -42,6 +42,8 @@ blogsRouter.post('/', async (request, response, next) => {
     user: user._id
   })
 
+  console.log('user.toJSON' + user.toJSON())
+
   if (blog.title === undefined && blog.url === undefined) {
     response.status(400, 'Bad Request').end()
     return
@@ -50,7 +52,8 @@ blogsRouter.post('/', async (request, response, next) => {
   if (blog.likes === undefined) {
     blog.likes = 0
   }
-
+  await user.blogs.push(blog)
+  await user.save()
   const result = await blog.save()
 
   return response.status(201).json(result)
