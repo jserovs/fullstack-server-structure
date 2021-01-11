@@ -32,3 +32,15 @@ copy 1 db to other
 npm install eslint-plugin-jest --save-dev
 
 4.21 ,  4.22 
+
+    const useAuth = {
+      username: 'test_user',
+      password: 'body.password'
+    }
+
+    const jwt = await api.post('/api/login')
+      .set('Content-type', 'application/json')
+      .send(useAuth).expect(200)
+
+
+      .set('Authorization', 'Bearer ' + jwt.body.token)      

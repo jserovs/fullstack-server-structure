@@ -72,7 +72,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
   }
   const id = request.params.id
 
-  const blog = await Blog.find({ _id: id })
+  const blog = await Blog.findOne({ _id: id })
 
   if (blog.length === 0) {
     response.status(404).end()
