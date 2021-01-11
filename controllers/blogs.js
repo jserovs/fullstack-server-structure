@@ -4,27 +4,16 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response, next) => {
-  const blogs = await Blog
-    .find({}).populate('user')
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
     .catch(error => next(error))
   response.json(blogs)
 })
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
-}
-
 blogsRouter.post('/', async (request, response, next) => {
-  const token = getTokenFrom(request)
-  const decodedToken = await jwt.verify(token, process.env.SECRET, (error, result) => {
+  const decodedToken = await jwt.verify(request.token, process.env.SECRET, (error, result) => {
     if (error) {
       next(error)
     } else {
-      console.log(result)
       return result
     }
   })
@@ -41,8 +30,6 @@ blogsRouter.post('/', async (request, response, next) => {
     likes: request.body.likes,
     user: user._id
   })
-
-  console.log('user.toJSON' + user.toJSON())
 
   if (blog.title === undefined && blog.url === undefined) {
     response.status(400, 'Bad Request').end()
@@ -71,7 +58,18 @@ blogsRouter.put('/:id', async (request, response) => {
   response.status(204).end()
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', async (request, response, next) => {
+  const decodedToken = await jwt.verify(request.token, process.env.SECRET, (error, result) => {
+    if (error) {
+      next(error)
+    } else {
+      return result
+    }
+  })
+
+  if (decodedToken === undefined || !decodedToken.id) {
+    return
+  }
   const id = request.params.id
 
   const blog = await Blog.find({ _id: id })
@@ -81,12 +79,16 @@ blogsRouter.delete('/:id', async (request, response) => {
     return
   }
 
-  await Blog.deleteOne({ _id: id })
-    .catch(() => {
-      response.status(500).end()
-    })
+  if (blog.user.toString() === decodedToken.id.toString()) {
+    await Blog.deleteOne({ _id: id })
+      .catch(() => {
+        response.status(500).end()
+      })
 
-  response.status(204).end()
+    response.status(204).end()
+  } else {
+    response.status(401).json({ error: 'can not delete record created by other user' })
+  }
 })
 
 module.exports = blogsRouter
