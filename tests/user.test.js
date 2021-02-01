@@ -8,7 +8,6 @@ const app = require('../app')
 const api = supertest(app)
 
 describe('user test set', () => {
-
   beforeEach(async () => {
     await User.deleteMany({})
 
@@ -17,7 +16,6 @@ describe('user test set', () => {
 
     await user.save()
   })
-
 
   test('create username', async () => {
     const usersAtStart = await helper.usersInDb()
@@ -54,6 +52,8 @@ describe('user test set', () => {
       .post('/api/users')
       .send(newUser)
       .expect(400)
+
+    // console.log(JSON.stringify(res))
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
@@ -98,4 +98,3 @@ describe('user test set', () => {
 afterAll(() => {
   mongoose.connection.close()
 })
-

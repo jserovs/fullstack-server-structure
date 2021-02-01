@@ -32,18 +32,13 @@ usersRouter.post('/', async (request, response, next) => {
   })
 
   const savedUser = await user.save().catch(error => {
+    console.log('ERROR:' + error)
     next(error)
   })
 
-  response.json(savedUser)
-})
-
-usersRouter.get('/', async (request, response, next) => {
-  const users = await User.find({})
-    .catch(error => {
-      next(error)
-    })
-  response.json(users)
+  if (savedUser !== undefined) {
+    response.json(savedUser)
+  }
 })
 
 module.exports = usersRouter
